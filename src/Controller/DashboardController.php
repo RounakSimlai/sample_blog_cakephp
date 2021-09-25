@@ -19,6 +19,8 @@ class DashboardController extends AppController
 {
     public function beforeFilter(EventInterface $event)
     {
+        parent::beforeFilter($event);
+
         $config = TableRegistry::getTableLocator()->get('Articles');
         $this->Articles = $config;
 
@@ -28,14 +30,20 @@ class DashboardController extends AppController
         $config = TableRegistry::getTableLocator()->get('Users');
         $this->Users = $config;
 
-        parent::beforeFilter($event);
+//        dd($this->request->getCookie('CustomCookie'));
+        if ($this->request->getCookie('CookieAuth') == null && $this->request->getCookie('CustomCookie') == null) {
+            $error = [['Session Expired. Please Log in Again!']];
+            $this->Flash->error(json_encode($error));
+            $this->redirect('/users/logout');
+        }
     }
+
     public function index()
     {
         $users = $this->Users->find('all')->toArray();
         $articles = $this->Articles->find('all')->toArray();
-        $categories =  $this->Categories->find('all')->toArray();
+        $categories = $this->Categories->find('all')->toArray();
 
-        $this->set(compact('users','articles','categories'));
+        $this->set(compact('users', 'articles', 'categories'));
     }
 }

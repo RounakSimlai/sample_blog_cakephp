@@ -27,16 +27,12 @@ class CategoriesSeed extends AbstractSeed
                 'parent_id' => null,
                 'name' => 'Category 1',
                 'description' => 'Category Description 1',
-                'created' => $time,
-                'modified' => $time,
             ],
             [
                 'id' => '2',
                 'parent_id' => null,
                 'name' => 'Category 2',
                 'description' => 'Category Description 2',
-                'created' => $time,
-                'modified' => $time,
             ],
 
         ];

@@ -8,7 +8,7 @@
 <div class="card">
     <div class="card-body">
         <h2 class="main-title">Edit your Account Details</h2>
-        <?php echo $this->Form->create($User,[
+        <?php echo $this->Form->create($User, [
             'class' => 'signup-form form'
         ]) ?>
         <div class="form-group">
@@ -36,8 +36,7 @@
             ]) ?>
         </div>
         <button type="submit" class="btn btn-primary">Save</button>
-        <?=$this->Form->end()?>
-        <?= $this->Html->link('Back',  $this->request->referer(), ['class' => 'btn btn-primary']) ?>
+        <?= $this->Form->end() ?>
+        <?= $this->Html->link('Back', $this->request->referer(), ['class' => 'btn btn-primary']) ?>
     </div>
 </div>
-

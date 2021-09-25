@@ -8,7 +8,7 @@
 
 <div class="card">
     <div class="card-body">
-        <h2 class="main-title">Add Article</h2>
+        <h2 class="main-title">Add Category</h2>
         <?php echo $this->Form->create(null, [
             'url' => [
                 'controller' => 'Categories',

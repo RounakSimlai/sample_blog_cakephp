@@ -15,7 +15,8 @@
             <tr>
                 <th><?= __('First Name:- ') ?></th>
                 <td><?= h($User->first_name) ?></td>
-            </tr><tr>
+            </tr>
+            <tr>
                 <th><?= __('Last Name:- ') ?></th>
                 <td><?= h($User->last_name) ?></td>
             </tr>
@@ -28,16 +29,27 @@
                 <td><?= h($User->role_id) ?></td>
             </tr>
         </table>
-        <?=$this->Html->link('Change Password',[
-            'controller'=>'Users',
-            'action'=>'password',
+        <?= $this->Html->image($User->image, [
+            'class' => 'profile rounded-circle border border-primary',
+            'width' => 195,
+            'height' => 258,
+        ]) ?>
+        <?= $this->Html->link('Change Profile Picture', [
+            'controller' => 'Users',
+            'action' => 'profilePic',
             $User->id,
-        ],['class'=>'btn btn-primary'])?>
-        <?=$this->Html->link('Edit Account Details',[
-            'controller'=>'Users',
-            'action'=>'edit',
+        ], ['class' => 'profile-button btn btn-primary']) ?>
+
+        <?= $this->Html->link('Change Password', [
+            'controller' => 'Users',
+            'action' => 'password',
             $User->id,
-        ],['class'=>'btn btn-primary'])?>
-        <?= $this->Html->link('Back', ['controller'=>'Dashboard','action' => 'index'], ['class' => 'btn btn-primary']) ?>
+        ], ['class' => 'btn btn-primary']) ?>
+        <?= $this->Html->link('Edit Account Details', [
+            'controller' => 'Users',
+            'action' => 'edit',
+            $User->id,
+        ], ['class' => 'btn btn-primary']) ?>
+        <?= $this->Html->link('Back', ['controller' => 'Dashboard', 'action' => 'index'], ['class' => 'btn btn-primary']) ?>
 
 

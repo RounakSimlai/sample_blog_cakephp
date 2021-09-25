@@ -3,12 +3,21 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
+use App\Application;
 use App\Model\Table\RolesTable;
 use App\Model\Table\UsersTable;
-use Cake\Auth\DefaultPasswordHasher;
+use Authentication\AuthenticationService;
+use Cake\Core\Configure;
+use Cake\Event\Event;
 use Cake\Event\EventInterface;
+use Cake\Http\Cookie\Cookie;
 use Cake\Http\Response;
+use Cake\I18n\FrozenTime;
+use Cake\I18n\Time;
+use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
+use Cake\Routing\Router;
+
 
 /**
  * @property UsersTable $Users
@@ -23,6 +32,8 @@ class UsersController extends AppController
         parent::beforeFilter($event);
         $config = TableRegistry::getTableLocator()->get('Users');
         $this->Users = $config;
+
+
         $this->Authentication->addUnauthenticatedActions(['login', 'add']);
     }
 
@@ -30,14 +41,20 @@ class UsersController extends AppController
     {
         $this->request->allowMethod(['get', 'post']);
         $result = $this->Authentication->getResult();
-//        dd($result->isValid());
         if ($result->isValid()) {
+            if (!isset($_COOKIE['CookieAuth'])) {
+                setcookie('CustomCookie', 'Not Remembered', [
+                    'expires' => time() + 60,
+                    'path' => '/',
+                    'secure' => false,
+                    'httponly' => false,
+                ]);
+            }
             $this->Flash->success('Logged in Successfully!');
             $redirect = $this->request->getQuery('redirect', [
                 'controller' => 'Dashboard',
                 'action' => 'index',
             ]);
-
             return $this->redirect($redirect);
         }
         if ($this->request->is('post') && !$result->isValid()) {
@@ -49,8 +66,13 @@ class UsersController extends AppController
     {
         $result = $this->Authentication->getResult();
         if ($result->isValid()) {
+            setcookie('CustomCookie', 'Not Remembered', [
+                'expires' => 60,
+                'path' => '/',
+                'secure' => false,
+                'httponly' => false,
+            ]);
             $this->Authentication->logout();
-
             return $this->redirect([
                 'controller' => 'Users',
                 'action' => 'login',
@@ -81,6 +103,18 @@ class UsersController extends AppController
         if ($this->request->is('post')) {
             $postData = $this->getRequest()->getData();
             $user = $this->Users->patchEntity($user, $postData);
+            if (!$user->getErrors()) {
+                $image = $this->getRequest()->getData('image_file');
+                $name = $image->getClientFileName();
+                $targetPath = WWW_ROOT . 'img' . DS . $name;
+                if ($name) {
+                    $user->image = $name;
+                    $image->moveTo($targetPath);
+                } else {
+                    $user->image = 'noPic.png';
+                }
+            }
+            $user->role_id = '2';
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('Account Created. Please Login to Continue!'));
                 return $this->redirect([
@@ -107,7 +141,6 @@ class UsersController extends AppController
         $User = $this->Users->get($id);
         if ($this->request->is(['patch', 'post', 'put'])) {
             $user = $this->Users->patchEntity($User, $this->request->getData());
-//            dd($user);
             if ($this->Users->save($user)) {
                 $this->Flash->success(__('Account Details updated!'));
                 return $this->redirect([
@@ -157,8 +190,15 @@ class UsersController extends AppController
                 'validate' => 'password',
             ]);
 //            dd($user->getErrors());
-            $user->password = $newPass;
+            $user->password = $this->getRequest()->getData('newPass');
             if ($this->Users->save($user)) {
+
+                $mailer = new Mailer('mail');
+                $mailer
+                    ->setTo('www.rounak1999@gmail.com')
+                    ->setSubject('Password Change')
+                    ->deliver('Password Changed Successfully. If it was not you, contact administrator immediately!');
+
                 $this->Flash->success(__('Password Updated Successfully! Please Login Again for security reasons!'));
                 return $this->redirect([
                     'controller' => 'Users',
@@ -168,6 +208,37 @@ class UsersController extends AppController
                 $errors = json_encode($user->getErrors());
                 $this->Flash->error($errors);
 
+            }
+        }
+    }
+
+    /**
+     * @param $id
+     * @return Response|void|null
+     */
+    public function profilePic($id)
+    {
+        $this->getRequest()->allowMethod(['post', 'get', 'patch', 'put']);
+        $User = $this->Users->get($id);
+        if ($this->getRequest()->is(['patch', 'post', 'put'])) {
+            $user = $this->Users->patchEntity($User, $this->request->getData());
+            $image = $this->request->getData('image_file');
+//            dd($image);
+            $name = $image->getClientFileName();
+            $targetPath = WWW_ROOT . 'img' . DS . $name;
+            $user->image = $name;
+//            dd($user->image);
+            $image->moveTo($targetPath);
+            if ($this->Users->save($user)) {
+                $this->Flash->success(__('Profile Picture Updated Successfully!'));
+                return $this->redirect([
+                    'controller' => 'Users',
+                    'action' => 'view',
+                    $User->id,
+                ]);
+            } else {
+                $errors = json_encode($user->getErrors());
+                $this->Flash->error($errors);
             }
         }
     }

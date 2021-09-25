@@ -1,53 +1,63 @@
-# CakePHP Application Skeleton
+# Sample Blog Program
 
-![Build Status](https://github.com/cakephp/app/actions/workflows/ci.yml/badge.svg?branch=master)
-[![Total Downloads](https://img.shields.io/packagist/dt/cakephp/app.svg?style=flat-square)](https://packagist.org/packages/cakephp/app)
-[![PHPStan](https://img.shields.io/badge/PHPStan-level%207-brightgreen.svg?style=flat-square)](https://github.com/phpstan/phpstan)
+This is a simple blog program with basic authentication and authorization
 
-A skeleton for creating applications with [CakePHP](https://cakephp.org) 4.x.
+---
+## Pre-Requisites
 
-The framework source code can be found here: [cakephp/cakephp](https://github.com/cakephp/cakephp).
+1.Composer(2.1.8 or higher)
 
-## Installation
+2.IDE(VS Code, PhpStorm etc.)
 
-1. Download [Composer](https://getcomposer.org/doc/00-intro.md) or update `composer self-update`.
-2. Run `php composer.phar create-project --prefer-dist cakephp/app [app_name]`.
+3.PgAdmin(If you use Postgresql) or PhpMyAdmin(If MySQL).
 
-If Composer is installed globally, run
+4.Cakephp(4.2.0 or higher)
 
-```bash
-composer create-project --prefer-dist cakephp/app
+---
+## Steps for Installation
+
+1.Clone the Project.
+
+2.Open the local terminal(cmd,powershell etc.) and run ``composer install`` then ``composer update``
+
+3.After the composer downloads all the dependencies, run ``bin\cake server`` to host the project in the localhost
+
+---
+## Setting up the environment of the project
+
+1. Copy the ".env.example" file and rename to ".env".
+
+
+2. In line 16 of the ".env" file, change the value of APP_NAME to the name of your database.
+
+3.In lines 33 and 34, do the following:-
+
+```
+export DATABASE_URL="type_of_db://user_group_name:user_group_password@localhost/${APP_NAME}?encoding=utf8&timezone=UTC&cacheMetadata=true&quoteIdentifiers=false&persistent=false"
+
+export DATABASE_TEST_URL="type_of_db://user_group_name:user_group_password@localhost/test_${APP_NAME}?encoding=utf8&timezone=UTC&cacheMetadata=true&quoteIdentifiers=false&persistent=false"
 ```
 
-In case you want to use a custom app dir name (e.g. `/myapp/`):
+---
 
-```bash
-composer create-project --prefer-dist cakephp/app myapp
-```
+## Configuring the bootstrap.php
 
-You can now either use your machine's webserver to view the default home page, or start
-up the built-in webserver with:
+In ``config/bootstrap.php``, uncomment lines 63 to 69 to use the ".env" file instead of the "app_local.php" file.
 
-```bash
-bin/cake server -p 8765
-```
+---
+# Change Log:-
 
-Then visit `http://localhost:8765` to see the welcome page.
+### 25th September 2021
 
-## Update
+1. Project is now responsive(Previously ran on 1024 X 768 resolution and below).
+2. An email is sent when password is changed by a user.
+3. Users can now add or change their profile picture.
+4. Users registered through the 'Sign Up' page cannot set themselves as admin anymore.
+    To get the admin details, check the UserSeeder class.
+5. "Remember Me" feature is added. If not remembered, the session of that user expires after 1 Minute.
+---
+#### Note:-
 
-Since this skeleton is a starting point for your application and various files
-would have been modified as per your needs, there isn't a way to provide
-automated upgrades, so you have to do any updates manually.
+>The expiration time of the custom cookie can be changed in the login method of UsersController.
 
-## Configuration
-
-Read and edit the environment specific `config/app_local.php` and setup the 
-`'Datasources'` and any other configuration relevant for your application.
-Other environment agnostic settings can be changed in `config/app.php`.
-
-## Layout
-
-The app skeleton uses [Milligram](https://milligram.io/) (v1.3) minimalist CSS
-framework by default. You can, however, replace it with any other library or
-custom styles.
+---

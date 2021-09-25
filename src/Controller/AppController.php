@@ -20,6 +20,7 @@ use Authentication\Controller\Component\AuthenticationComponent;
 use Authorization\Controller\Component\AuthorizationComponent;
 use Cake\Controller\Controller;
 use Cake\Datasource\ResultSetInterface;
+use Exception;
 
 /**
  * Application Controller
@@ -33,6 +34,17 @@ use Cake\Datasource\ResultSetInterface;
  */
 class AppController extends Controller
 {
+    public function beforeFilter(\Cake\Event\EventInterface $event)
+    {
+        parent::beforeFilter($event);
+    }
+    public function beforeRender(\Cake\Event\EventInterface $event) {
+        parent::beforeRender($event);
+
+        $user = $this->request->getAttribute('identity');
+        $this->set('user', $user);
+    }
+
     /**
      * Initialization hook method.
      *
@@ -41,17 +53,8 @@ class AppController extends Controller
      * e.g. `$this->loadComponent('FormProtection');`
      *
      * @return void
+     * @throws Exception
      */
-
-    public function beforeFilter(\Cake\Event\EventInterface $event)
-    {
-        parent::beforeFilter($event);
-    }
-    public function beforeRender(\Cake\Event\EventInterface $event) {
-        parent::beforeRender($event);
-        $user = $this->request->getAttribute('identity');
-        $this->set('user',$user);
-    }
     public function initialize(): void
     {
         parent::initialize();

@@ -8,6 +8,11 @@
 <div class="container">
     <h2 class="main-title">Categories</h2>
     <?= $this->Html->link(__('New Category'), ['action' => 'add'], ['class' => 'btn btn-primary float-right']) ?>
+    <?php
+    if (count($categories) > 0) {
+    ?>
+    <?= $this->Html->link(__('Export to CSV'), ['action' => 'csv'], ['class' => 'btn btn-primary float-left']) ?>
+    <?php } ?>
     <br><br>
     <?php
     if (count($categories) == 0){

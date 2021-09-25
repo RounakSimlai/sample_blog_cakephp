@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 /**
@@ -21,7 +22,10 @@ use Cake\Core\Configure;
 use Cake\Core\Exception\MissingPluginException;
 use Cake\Datasource\FactoryLocator;
 use Cake\Http\BaseApplication;
+use Cake\Http\Middleware\EncryptedCookieMiddleware;
 use Cake\Http\MiddlewareQueue;
+use Cake\I18n\Date;
+use Cake\I18n\FrozenTime;
 use Cake\ORM\Locator\TableLocator;
 use Cake\Routing\Middleware\RoutingMiddleware;
 use Authentication\AuthenticationService;
@@ -82,6 +86,7 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
     {
         $middlewareQueue
             ->add(new RoutingMiddleware($this))
+            ->add(new EncryptedCookieMiddleware(['CookieAuth'],'Yq3s6v9y$B&E)H@McQfTjWnZr4u7w!z%'))
             ->add(new AuthenticationMiddleware($this));
 
         return $middlewareQueue;
@@ -89,6 +94,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
 
     public function getAuthenticationService(ServerRequestInterface $request): AuthenticationServiceInterface
     {
+        $time = new FrozenTime();
+
         $authenticationService = new AuthenticationService([
             'unauthenticatedRedirect' => Router::url('/users/login'),
             'queryParam' => 'redirect',
@@ -100,6 +107,8 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             ]
         ]);
         $authenticationService->loadAuthenticator('Authentication.Session');
+
+        // If the user is on the login page, check for a cookie as well.
         $authenticationService->loadAuthenticator('Authentication.Form', [
             'fields' => [
                 'username' => 'email',
@@ -107,6 +116,15 @@ class Application extends BaseApplication implements AuthenticationServiceProvid
             ],
             'loginUrl' => Router::url('/users/login'),
         ]);
+        $authenticationService->loadAuthenticator('Authentication.Cookie', [
+            'fields' => [
+                'username' => 'email',
+                'password' => 'password',
+            ],
+            'loginUrl' => Router::url('/users/login'),
+            'unauthorizedRedirect' => Router::url('/users/login'),
+        ]);
+
 
         return $authenticationService;
     }

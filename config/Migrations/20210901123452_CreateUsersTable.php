@@ -33,8 +33,15 @@ class CreateUsersTable extends AbstractMigration
             ->addColumn('role_id', 'integer', [
                 'null' => false
             ])
-            ->addColumn('created', 'datetime')
-            ->addColumn('modified', 'datetime')
+            ->addColumn('image','string',[
+                'null'=>true,
+            ])
+            ->addColumn('created', 'datetime',[
+                'null' => true
+            ])
+            ->addColumn('modified', 'datetime',[
+            'null' => true
+            ])
             ->addIndex('email', [
                 'unique' => true,
                 'name' => 'uniq_email'

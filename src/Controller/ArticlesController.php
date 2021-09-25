@@ -11,7 +11,6 @@ use Cake\Core\App;
 use Cake\Event\EventInterface;
 use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
-use \Authorization\Identity;
 
 /**
  * @property ArticlesTable $Articles
@@ -24,9 +23,15 @@ class ArticlesController extends AppController
 
     public function beforeFilter(EventInterface $event)
     {
+        parent::beforeFilter($event);
+
         $config = TableRegistry::getTableLocator()->get('Articles');
         $this->Articles = $config;
-        parent::beforeFilter($event);
+        if (!isset($_COOKIE['CookieAuth']) && !isset($_COOKIE['CustomCookie'])) {
+            $error = [['Session Expired. Please Log in Again!']];
+            $this->Flash->error(json_encode($error));
+            $this->redirect('/users/logout');
+        }
     }
 
     public function index()
@@ -109,5 +114,16 @@ class ArticlesController extends AppController
         $this->response = $this->response->withStatus(404);
 
         return $this->response;
+    }
+    public function csv()
+    {
+        $this->response = $this->response->withDownload('ArticlesData.csv');
+        $articles = $this->Articles->find('all');
+        $_serialize = 'articles';
+        $_header = ['ID', 'Title', 'Body', 'Category Id', 'User Id'];
+        $_extract = ['id', 'title', 'body', 'category_id', 'user_id'];
+
+        $this->viewBuilder()->setClassName('CsvView.Csv');
+        $this->set(compact('articles', '_serialize','_header','_extract'));
     }
 }

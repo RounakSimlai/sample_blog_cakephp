@@ -51,6 +51,9 @@ $this->disableAutoLayout();
             'class' => 'form-input',
             'label' => false,
         ]) ?>
+        <div class="form-check">
+        <?= $this->Form->control('remember_me', ['type' => 'checkbox','class'=>'form-check-input']);?>
+        </div>
         <?php echo $this->Form->button('Sign in!', [
             'class' => 'form-btn primary-default-btn transparent-btn'
         ]) ?>

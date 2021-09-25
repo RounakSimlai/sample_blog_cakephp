@@ -2,11 +2,12 @@
 declare(strict_types=1);
 
 use Migrations\AbstractSeed;
+use \Authentication\PasswordHasher\DefaultPasswordHasher;
 
 /**
- * Roles seed.
+ * Users seed.
  */
-class RolesSeed extends AbstractSeed
+class UsersSeed extends AbstractSeed
 {
     /**
      * Run Method.
@@ -20,21 +21,20 @@ class RolesSeed extends AbstractSeed
      */
     public function run()
     {
-        $time = (new \Cake\I18n\Time());
+        $hash = new DefaultPasswordHasher();
         $data = [
             [
-                'id'=>'1',
-                'title'=>'Admin',
-                'description'=>'Has access to everything',
-            ],
-            [
-                'id'=>'2',
-                'title'=>'Author',
-                'description'=>'Has access to their own articles',
+            'id'=>'1',
+            'first_name'=>'App',
+            'last_name'=>'Admin',
+            'email'=>'admin@domain.com',
+            'password'=>$hash->hash('admin123'),
+            'role_id'=>'1',
+            'image'=>'noPic.png',
             ],
         ];
 
-        $table = $this->table('roles');
+        $table = $this->table('users');
         $table->insert($data)->save();
     }
 }

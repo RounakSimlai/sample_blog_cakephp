@@ -92,6 +92,10 @@ class UsersTable extends Table
             ->requirePresence('password', 'create')
             ->notEmptyString('password');
 
+        $validator
+            ->scalar('image')
+            ->allowEmptyFile('image');
+
         return $validator;
     }
 

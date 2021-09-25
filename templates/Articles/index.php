@@ -1,14 +1,20 @@
 <?php
 /**
+ * @var \App\View\AppView $this
  * @var \App\Model\Entity\Article $article
  * @var \Cake\Datasource\ResultSetInterface $articles
  * @var App\Model\Entity\User $user
  */
-//dd($user);
+$this->initialize();
 ?>
 <div class="container">
     <h2 class="main-title">Articles</h2>
     <?= $this->Html->link(__('New Article'), ['action' => 'add'], ['class' => 'btn btn-primary float-right']) ?>
+    <?php
+    if (count($articles) > 0) {
+        ?>
+        <?= $this->Html->link(__('Export to CSV'), ['action' => 'csv'], ['class' => 'btn btn-primary float-left']) ?>
+    <?php } ?>
     <br><br>
     <?php
     if (count($articles) == 0){

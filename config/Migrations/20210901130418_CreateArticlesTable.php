@@ -32,11 +32,11 @@ class CreateArticlesTable extends AbstractMigration
             'null' => false,
         ])
             ->addColumn('created', 'datetime', [
-            'null' => false,
+            'null' => true,
         ])
 
             ->addColumn('modified', 'datetime', [
-            'null' => false,
+            'null' => true,
         ])
         ->create();
     }

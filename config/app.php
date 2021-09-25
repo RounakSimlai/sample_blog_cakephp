@@ -76,7 +76,7 @@ return [
      *   You should treat it as extremely sensitive data.
      */
     'Security' => [
-        'salt' => env('SECURITY_SALT'),
+        'salt' => env('SECURITY_SALT','Yq3s6v9y$B&E)H@McQfTjWnZr4u7w!z%'),
     ],
 
     /*
@@ -242,6 +242,13 @@ return [
             'tls' => false,
             'url' => env('EMAIL_TRANSPORT_DEFAULT_URL', null),
         ],
+        'mail' => [
+            'host' => 'smtp.mailtrap.io',
+            'port' => 2525,
+            'username' => 'c9db512bcacfd6',
+            'password' => 'c447ebf0af92d6',
+            'className' => 'Smtp'
+        ],
     ],
 
     /*
@@ -262,6 +269,10 @@ return [
              */
             //'charset' => 'utf-8',
             //'headerCharset' => 'utf-8',
+        ],
+        'mail' => [
+            'transport' => 'mail',
+            'from'=>'admin@domain.com',
         ],
     ],
 

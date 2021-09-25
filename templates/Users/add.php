@@ -31,7 +31,8 @@ $this->disableAutoLayout();
                 'controller' => 'Users',
                 'action' => 'add'
             ],
-            'class' => 'signup-form form'
+            'class' => 'signup-form form',
+            'type'=>'file',
         ]) ?>
         <label class="form-label-wrapper">
             <p class="form-label">Name</p>
@@ -66,11 +67,12 @@ $this->disableAutoLayout();
             ]) ?>
         </label>
         <label class="form-label-wrapper">
-            <p class="form-label">Role</p>
-            <?php echo $this->Form->control('role_id', [
-                'type' => 'select',
-                'class' => 'form-input',
+            <p class="form-label">Profile Picture</p>
+            <?php echo $this->Form->control('image_file', [
+                'class'=>'form-control',
+                'type' => 'file',
                 'label' => false,
+                'style'=>'width: 16em;',
             ]) ?>
         </label>
         <?php echo $this->Form->button('Register!', [
@@ -78,7 +80,7 @@ $this->disableAutoLayout();
         ]) ?>
         <?php echo $this->Form->end() ?>
     </label>
-    <?= $this->Html->link('Back',  $this->request->referer(), ['class' => 'btn btn-primary']) ?>
+    <?= $this->Html->link('Back', $this->request->referer(), ['class' => 'btn btn-primary']) ?>
 </main>
 <?= $this->Html->script(['chart.min.js', 'feather.min.js', 'script.js']) ?>
 </body>

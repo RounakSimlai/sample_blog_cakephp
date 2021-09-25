@@ -29,10 +29,10 @@ class CreateCategoriesTable extends AbstractMigration
                 'null' => true,
             ])
             ->addColumn('created', 'datetime', [
-                'null' => false,
+                'null' => true
             ])
             ->addColumn('modified', 'datetime', [
-                'null' => false,
+                'null' => true,
             ])
             ->create();
     }

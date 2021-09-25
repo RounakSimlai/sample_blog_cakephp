@@ -26,8 +26,12 @@ class CreateRolesTable extends AbstractMigration
             ->addColumn('description', 'string', [
                 'null' => false
             ])
-            ->addColumn('created', 'datetime')
-            ->addColumn('modified', 'datetime')
+            ->addColumn('created', 'datetime', [
+                'null' => true
+            ])
+            ->addColumn('modified', 'datetime', [
+                'null' => true
+            ])
             ->create();
     }
 }
