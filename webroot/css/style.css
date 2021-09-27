@@ -11,7 +11,6 @@
 @import url(../fonts/stylesheet.css);
 
 html {
-    overflow: hidden;
     line-height: 1.15;
     /* 1 */
     -webkit-text-size-adjust: 100%;
@@ -2632,6 +2631,17 @@ label {
     -webkit-box-pack: end;
     -ms-flex-pack: end;
     justify-content: flex-end;
+}
+
+.qrCodeHeader{
+    position: relative;
+    display: block;
+    left: 35rem;
+    top: -25rem;
+}
+.qrCode{
+    position: relative;
+    left: 1.5rem;
 }
 
 .stat-cards {

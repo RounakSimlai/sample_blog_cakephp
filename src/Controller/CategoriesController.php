@@ -11,6 +11,7 @@ use Cake\Database\Expression\QueryExpression;
 use Cake\Event\EventInterface;
 use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
+use CodeItNow\BarcodeBundle\Utils\QrCode;
 
 /**
  * Categories Controller
@@ -87,8 +88,18 @@ class CategoriesController extends AppController
         $category = $this->Categories->get($id, [
             'contain' => ['ParentCategories', 'Articles', 'ChildCategories'],
         ]);
+        $qrCode = new QrCode();
+        $qrCode
+            ->setText(" Id: $category->id \n parent_id: $category->parent_id \n Name: $category->name \n Description: $category->description \n Created: $category->created \n Modified: $category->modified")
+            ->setSize(200)
+            ->setPadding(10)
+            ->setErrorCorrection('high')
+            ->setForegroundColor(array('r' => 0, 'g' => 0, 'b' => 0, 'a' => 0))
+            ->setBackgroundColor(array('r' => 255, 'g' => 255, 'b' => 255, 'a' => 0))
+            ->setImageType(QrCode::IMAGE_TYPE_PNG);
+        $qr = '<img src="data:' . $qrCode->getContentType() . ';base64,' . $qrCode->generate() . '" />';
 
-        $this->set(compact('category'));
+        $this->set(compact('category','qr'));
     }
 
 

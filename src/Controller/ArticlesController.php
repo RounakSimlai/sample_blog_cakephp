@@ -12,6 +12,7 @@ use Cake\Database\Expression\QueryExpression;
 use Cake\Event\EventInterface;
 use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
+use CodeItNow\BarcodeBundle\Utils\QrCode;
 
 /**
  * @property ArticlesTable $Articles
@@ -54,15 +55,23 @@ class ArticlesController extends AppController
         $this->set(compact('articles', 'user'));
     }
 
-    public
-    function view($id)
+    public function view($id)
     {
         $article = $this->Articles->get($id);
-        $this->set(compact('article'));
+        $qrCode = new QrCode();
+        $qrCode
+            ->setText(" Id: $article->id \n Category: $article->category_id \n Title: $article->title \n Body: $article->body \n Created: $article->created \n Modified: $article->modified")
+            ->setSize(200)
+            ->setPadding(10)
+            ->setErrorCorrection('high')
+            ->setForegroundColor(array('r' => 0, 'g' => 0, 'b' => 0, 'a' => 0))
+            ->setBackgroundColor(array('r' => 255, 'g' => 255, 'b' => 255, 'a' => 0))
+            ->setImageType(QrCode::IMAGE_TYPE_PNG);
+        $qr = '<img src="data:' . $qrCode->getContentType() . ';base64,' . $qrCode->generate() . '" />';
+        $this->set(compact('article', 'qr'));
     }
 
-    public
-    function add()
+    public function add()
     {
         $categories = $this->Articles->Categories->find('list')->all();
         $categories = $categories->append([count($categories) + 1 => 'Other']);

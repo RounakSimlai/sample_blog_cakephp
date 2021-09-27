@@ -1,6 +1,7 @@
 <?php
 /**
  * @var \App\Model\Entity\Category $category
+ * @var  \CodeItNow\BarcodeBundle\Utils\QrCode $qr
  */
 ?>
 <div class="card">
@@ -36,5 +37,12 @@
             </tr>
         </table>
         <?= $this->Html->link('Back', $this->request->referer(), ['class' => 'btn btn-primary']) ?>
+        <div class='qrCodeHeader'>
+            <strong><?= __('Scan QR Code for details on phone') ?></strong>
+            <br>
+            <div class='qrCode'>
+                <?= $qr ?>
+            </div>
+        </div>
     </div>
 </div>
