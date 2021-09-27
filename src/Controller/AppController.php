@@ -14,6 +14,7 @@ declare(strict_types=1);
  * @since     0.2.9
  * @license   https://opensource.org/licenses/mit-license.php MIT License
  */
+
 namespace App\Controller;
 
 use Authentication\Controller\Component\AuthenticationComponent;
@@ -38,7 +39,9 @@ class AppController extends Controller
     {
         parent::beforeFilter($event);
     }
-    public function beforeRender(\Cake\Event\EventInterface $event) {
+
+    public function beforeRender(\Cake\Event\EventInterface $event)
+    {
         parent::beforeRender($event);
 
         $user = $this->request->getAttribute('identity');

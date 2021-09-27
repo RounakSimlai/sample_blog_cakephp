@@ -8,6 +8,7 @@ use App\Model\Table\CategoriesTable;
 use App\Model\Table\UsersTable;
 use Cake\Collection\Collection;
 use Cake\Core\App;
+use Cake\Database\Expression\QueryExpression;
 use Cake\Event\EventInterface;
 use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
@@ -25,29 +26,43 @@ class ArticlesController extends AppController
     {
         parent::beforeFilter($event);
 
-        $config = TableRegistry::getTableLocator()->get('Articles');
-        $this->Articles = $config;
         if (!isset($_COOKIE['CookieAuth']) && !isset($_COOKIE['CustomCookie'])) {
             $error = [['Session Expired. Please Log in Again!']];
             $this->Flash->error(json_encode($error));
             $this->redirect('/users/logout');
         }
+        $config = TableRegistry::getTableLocator()->get('Articles');
+        $this->Articles = $config;
     }
 
     public function index()
     {
-        $articles = $this->paginate($this->Articles);
+        $query = $this->Articles->find()->orderDesc('Articles.created');
+        if ($this->getRequest()->getQuery('search')) {
+            $query->where(function (QueryExpression $expression) {
+                $conditions = [
+                    $this->Articles->aliasField('title') . ' LIKE ' => $this->getRequest()->getQuery('search'),
+                    $this->Articles->aliasField('body') . ' LIKE ' => $this->getRequest()->getQuery('search'),
+                ];
+                return $expression->or($conditions);
+            });
+            $articles = $this->paginate($query);
+        } else {
+            $articles = $this->paginate($this->Articles);
+        }
         $user = $this->request->getAttribute('identity')->getIdentifier();
-        $this->set(compact('articles','user'));
+        $this->set(compact('articles', 'user'));
     }
 
-    public function view($id)
+    public
+    function view($id)
     {
         $article = $this->Articles->get($id);
         $this->set(compact('article'));
     }
 
-    public function add()
+    public
+    function add()
     {
         $categories = $this->Articles->Categories->find('list')->all();
         $categories = $categories->append([count($categories) + 1 => 'Other']);
@@ -79,7 +94,8 @@ class ArticlesController extends AppController
         }
     }
 
-    public function edit($id)
+    public
+    function edit($id)
     {
         $article = $this->Articles->get($id);
         if ($this->request->is(['patch', 'post', 'put'])) {
@@ -101,7 +117,8 @@ class ArticlesController extends AppController
         $this->set(compact('categories'));
     }
 
-    public function delete($id)
+    public
+    function delete($id)
     {
         $this->request->allowMethod(['post', 'delete']);
         $article = $this->Articles->get($id);
@@ -115,7 +132,9 @@ class ArticlesController extends AppController
 
         return $this->response;
     }
-    public function csv()
+
+    public
+    function csv()
     {
         $this->response = $this->response->withDownload('ArticlesData.csv');
         $articles = $this->Articles->find('all');
@@ -124,6 +143,23 @@ class ArticlesController extends AppController
         $_extract = ['id', 'title', 'body', 'category_id', 'user_id'];
 
         $this->viewBuilder()->setClassName('CsvView.Csv');
-        $this->set(compact('articles', '_serialize','_header','_extract'));
+        $this->set(compact('articles', '_serialize', '_header', '_extract'));
+    }
+
+    public
+    function pdf()
+    {
+        $this->viewBuilder()->enableAutoLayout(false);
+        $articles = $this->Articles->find('all');
+        $this->viewBuilder()->setClassName('CakePdf.Pdf');
+        $this->viewBuilder()->setOption(
+            'pdfConfig',
+            [
+                'orientation' => 'portrait',
+                'download' => true,
+                'filename' => 'ArticlesData.pdf'
+            ]
+        );
+        $this->set('articles', $articles);
     }
 }

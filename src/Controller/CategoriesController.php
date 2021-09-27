@@ -7,6 +7,7 @@ namespace App\Controller;
 use \App\Model\Table\CategoriesTable;
 use App\Model\Table\UsersTable;
 use Authorization\Exception\ForbiddenException;
+use Cake\Database\Expression\QueryExpression;
 use Cake\Event\EventInterface;
 use Cake\Http\Response;
 use Cake\ORM\TableRegistry;
@@ -37,8 +38,6 @@ class CategoriesController extends AppController
 
     public function beforeFilter(EventInterface $event)
     {
-        $config = TableRegistry::getTableLocator()->get('Categories');
-        $this->Categories = $config;
         parent::beforeFilter($event);
 
         if (!isset($_COOKIE['CookieAuth']) && !isset($_COOKIE['CustomCookie'])) {
@@ -46,6 +45,9 @@ class CategoriesController extends AppController
             $this->Flash->error(json_encode($error));
             $this->redirect('/users/logout');
         }
+
+        $config = TableRegistry::getTableLocator()->get('Categories');
+        $this->Categories = $config;
     }
 
     /**
@@ -55,11 +57,21 @@ class CategoriesController extends AppController
      */
     public function index()
     {
-
-        $this->paginate = [
-            'contain' => ['ParentCategories'],
-        ];
-        $categories = $this->paginate($this->Categories);
+        if ($this->getRequest()->getQuery('search')) {
+            $query = $this->Categories->find()->where(function (QueryExpression $expression) {
+                $conditions = [
+                    $this->Categories->aliasField('name') . ' LIKE' => '%' . $this->getRequest()->getQuery('search'),
+                    $this->Categories->aliasField('description') . ' LIKE' => '%' . $this->getRequest()->getQuery('search'),
+                ];
+                return $expression->or($conditions);
+            });
+            $categories = $this->paginate($query);
+        } else {
+            $this->paginate = [
+                'contain' => ['ParentCategories'],
+            ];
+            $categories = $this->paginate($this->Categories);
+        }
         $this->set(compact('categories'));
     }
 
@@ -149,5 +161,32 @@ class CategoriesController extends AppController
 
         $this->viewBuilder()->setClassName('CsvView.Csv');
         $this->set(compact('categories', '_serialize', '_header', '_extract'));
+    }
+
+    public function pdf()
+    {
+        $this->viewBuilder()->enableAutoLayout(false);
+        $categories = $this->Categories->find('all');
+        $this->viewBuilder()->setClassName('CakePdf.Pdf');
+        $this->viewBuilder()->setOption(
+            'pdfConfig',
+            [
+                'orientation' => 'portrait',
+                'download' => true,
+                'filename' => 'CategoriesData.pdf'
+            ]
+        );
+        $this->set('categories', $categories);
+    }
+
+    public function search()
+    {
+        //Download all records at once
+        $this->paginate['maxLimit'] = 999;
+
+        $categories = $this->paginate($this->Categories->find('search', ['search' => $this->request->getQuery()]));
+
+        $this->set(compact('categories'));
+        $this->set('_serialize', ['categories']);
     }
 }

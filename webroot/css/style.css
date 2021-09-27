@@ -11,6 +11,7 @@
 @import url(../fonts/stylesheet.css);
 
 html {
+    overflow: hidden;
     line-height: 1.15;
     /* 1 */
     -webkit-text-size-adjust: 100%;
