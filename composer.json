@@ -6,6 +6,8 @@
     "license": "MIT",
     "require": {
         "php": ">=8.0",
+        "ext-fileinfo": "*",
+        "ext-imagick": "*",
         "ext-json": "*",
         "cakephp/authentication": "2.*",
         "cakephp/authorization": "2.*",
@@ -15,9 +17,11 @@
         "codeitnowin/barcode": "^3.0",
         "dereuromark/cakephp-tinyauth": "^3.0",
         "dompdf/dompdf": "^1.0",
+        "fpdf/fpdf": "^1.83",
         "friendsofcake/cakepdf": "^4.1",
         "friendsofcake/cakephp-csvview": "^4.0",
         "mobiledetect/mobiledetectlib": "^2.8",
+        "phpoffice/phpspreadsheet": "^1.18",
         "robmorgan/phinx": "^0.12.8"
     },
     "require-dev": {

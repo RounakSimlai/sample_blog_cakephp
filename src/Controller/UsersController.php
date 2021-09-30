@@ -3,21 +3,14 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Application;
 use App\Model\Table\RolesTable;
 use App\Model\Table\UsersTable;
-use Authentication\AuthenticationService;
-use Cake\Core\Configure;
-use Cake\Event\Event;
 use Cake\Event\EventInterface;
-use Cake\Http\Cookie\Cookie;
 use Cake\Http\Response;
-use Cake\I18n\FrozenTime;
-use Cake\I18n\Time;
 use Cake\Mailer\Mailer;
 use Cake\ORM\TableRegistry;
-use Cake\Routing\Router;
-
+use Dompdf\Dompdf;
+use Imagick;
 
 /**
  * @property UsersTable $Users
@@ -241,5 +234,41 @@ class UsersController extends AppController
                 $this->Flash->error($errors);
             }
         }
+    }
+
+    /**
+     * @throws \ImagickException
+     * @throws \Dompdf\Exception
+     */
+    public function pdf($id)
+    {
+        $User = $this->Users->get($id);
+        $this->viewBuilder()->enableAutoLayout(false);
+        $this->viewBuilder()->setClassName('CakePdf.Pdf');
+        $this->viewBuilder()->setOption(
+            'pdfConfig',
+            [
+                'orientation' => 'portrait',
+                'download' => true,
+                'filename' => "Details of $User->first_name $User->last_name.pdf",
+
+            ]
+        );
+        $im = new Imagick();
+        $image = $im->readImage(WWW_ROOT . 'img' . DS . $User->image);
+        $type = $im->getImageMimeType();
+        $imageView = $im->getImageBlob();
+        $encoded = base64_encode($imageView);
+        $img = '<img src="data:' . $type . ';base64,' . $encoded . '" width = 195, height= 258 alt=""/>';
+        $this->set(compact('User', 'img'));
+    }
+
+    public function excel($id)
+    {
+        $this->viewBuilder()->disableAutoLayout();
+        $user = $this->Users->get($id);
+        $this->set(compact('user'));
+        // Take the view and return as a response to the user/browser
+        $this->response = $this->response->withDownload('UserDetails.xlsx');
     }
 }

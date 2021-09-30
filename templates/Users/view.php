@@ -51,5 +51,7 @@
             $User->id,
         ], ['class' => 'btn btn-primary']) ?>
         <?= $this->Html->link('Back', ['controller' => 'Dashboard', 'action' => 'index'], ['class' => 'btn btn-primary']) ?>
+        <?= $this->Html->link(__('Export Details to PDF'), ['action' => 'pdf',$User->id], ['class' => 'btn btn-primary mt-2']) ?>
+        <?= $this->Html->link(__('Export Details to Excel'), ['action' => 'excel',$User->id], ['class' => 'btn btn-primary mt-2']) ?>
 
 

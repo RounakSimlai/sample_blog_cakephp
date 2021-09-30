@@ -126,8 +126,7 @@ class ArticlesController extends AppController
         $this->set(compact('categories'));
     }
 
-    public
-    function delete($id)
+    public function delete($id): ?Response
     {
         $this->request->allowMethod(['post', 'delete']);
         $article = $this->Articles->get($id);
@@ -142,8 +141,7 @@ class ArticlesController extends AppController
         return $this->response;
     }
 
-    public
-    function csv()
+    public function csv()
     {
         $this->response = $this->response->withDownload('ArticlesData.csv');
         $articles = $this->Articles->find('all');
@@ -155,8 +153,7 @@ class ArticlesController extends AppController
         $this->set(compact('articles', '_serialize', '_header', '_extract'));
     }
 
-    public
-    function pdf()
+    public function pdf()
     {
         $this->viewBuilder()->enableAutoLayout(false);
         $articles = $this->Articles->find('all');

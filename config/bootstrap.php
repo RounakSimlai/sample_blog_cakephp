@@ -222,8 +222,14 @@ Configure::write('CakePdf', [
     'engine' => [
         'className' => 'CakePdf.DomPdf',
         'options' => [
-            'isRemoteEnabled' => true
-        ]
+            'isRemoteEnabled' => true,
+            'isHtml5ParserEnabled' => true,
+            'pdfBackend' => 'auto',
+            'isPhpEnabled'=>true,
+        ],
+        'chroot' => [
+            WWW_ROOT,
+        ],
     ],
     'margin' => [
         'bottom' => 10,
@@ -232,5 +238,5 @@ Configure::write('CakePdf', [
         'top' => 10
     ],
     'orientation' => 'portrait',
-    'download' => true
+    'download' => true,
 ]);
