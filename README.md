@@ -70,6 +70,11 @@ In ``config/bootstrap.php``, uncomment lines 63 to 69 to use the ".env" file ins
 
 1. User data can now be downloaded in pdf and excel formats.
 
+### 1st October 2021
+
+1. Admin can now disable or enable specific articles and categories at his discretion. If any is disabled, a message
+   will show in the actions tab on user side that the article(s) or category(s) is disabled.
+
 ---
 
 #### Note:-

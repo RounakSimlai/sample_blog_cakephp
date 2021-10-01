@@ -10,6 +10,7 @@ use Authorization\Exception\ForbiddenException;
 use Cake\Database\Expression\QueryExpression;
 use Cake\Event\EventInterface;
 use Cake\Http\Response;
+use Cake\I18n\FrozenTime;
 use Cake\ORM\TableRegistry;
 use CodeItNow\BarcodeBundle\Utils\QrCode;
 
@@ -160,6 +161,36 @@ class CategoriesController extends AppController
         }
 
         return $this->redirect(['action' => 'index']);
+    }
+
+    /**
+     * @param $id
+     * @return Response|void|null
+     */
+    public function disable($id)
+    {
+        $category = $this->Categories->get($id);
+        if ($this->request->is(['patch', 'post', 'put'])) {
+            $category = $this->Categories->patchEntity($category, $this->request->getData());
+            if ($category->disabled !== null) {
+                $category->disabled = null;
+                if ($this->Categories->save($category)) {
+                    $this->Flash->success("Category has been enabled successfully!");
+                    return $this->redirect(['action' => 'index'])->withStatus(200);
+                }
+            }
+            if ($category->disabled === null) {
+                $category->disabled = new FrozenTime();
+                if ($this->Categories->save($category)) {
+                    $this->Flash->success("Category has been disabled successfully!");
+                    return $this->redirect(['action' => 'index'])->withStatus(200);
+                }
+            }
+            $this->Flash->error('Something went wrong. Please try again later!');
+            $this->response = $this->response->withStatus(400);
+
+            return $this->response;
+        }
     }
 
     public function csv()

@@ -5,9 +5,8 @@
  * @var \Cake\Datasource\ResultSetInterface $articles
  * @var App\Model\Entity\User $user
  */
-$this->initialize();
 ?>
-<div class="container">
+<div class="container" style="overflow-x: hidden ">
     <h2 class="main-title">Articles</h2>
     <?= $this->Html->link(__('New Article'), ['action' => 'add'], ['class' => 'btn btn-primary float-right']) ?>
     <?php
@@ -64,11 +63,38 @@ else{
             <td><?= h($article->created) ?></td>
             <td><?= h($article->modified) ?></td>
             <td class="actions">
-                <?= $this->Html->link(__('View'), ['action' => 'view', $article->id,], ['class' => 'btn btn-success']) ?>
-                <?php if ($article->user_id == $user->id || $user->role_id == 1) { ?>
-                    <?= $this->Html->link(__('Edit'), ['action' => 'edit', $article->id], ['class' => 'btn btn-warning']) ?>
-                    <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $article->id], ['class' => 'btn btn-danger'], ['confirm' => 'Are you sure you want to delete this article?']) ?>
+                <?php if ($article->disabled !== null && $user->role_id == 1) { ?>
+                    <?= $this->Form->create($article, [
+                        'action' => \Cake\Routing\Router::url([
+                            'controller' => 'Articles',
+                            'action' => 'disable',
+                            $article->id,
+                        ])
+                    ]) ?>
+                    <?= $this->Form->submit(__('Enable'), ['class' => 'btn btn-secondary', 'confirm' => 'Are you sure you want to enable this article?']) ?>
+                    <?= $this->Form->end() ?>
                 <?php } ?>
+                <?php if ($article->disabled !== null && $user->role_id != 1) { ?>
+                    <?= h('Article Disabled By Admin.') ?>
+                <?php } ?>
+                <?php if ($article->disabled === null) { ?>
+                    <?= $this->Html->link(__('View'), ['action' => 'view', $article->id,], ['class' => 'btn btn-success']) ?>
+                    <?php if ($article->user_id == $user->id || $user->role_id == 1) { ?>
+                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $article->id], ['class' => 'btn btn-warning']) ?>
+                        <?= $this->Form->PostLink(__('Delete'), ['method'=>'POST','action' => 'delete', $article->id], ['class' => 'btn btn-danger', 'confirm' => 'Are you sure you want to delete this article?']) ?>
+                        <?php if ($user->role_id == 1) { ?>
+                            <?= $this->Form->create($article, [
+                                'action' => \Cake\Routing\Router::url([
+                                    'controller' => 'Articles',
+                                    'action' => 'disable',
+                                    $article->id,
+                                ])
+                            ]) ?>
+                            <?= $this->Form->submit(__('Disable'), ['class' => 'btn btn-secondary mt-1', 'confirm' => 'Are you sure you want to disable this article?']) ?>
+                            <?= $this->Form->end() ?>
+                        <?php }
+                    }
+                } ?>
             </td>
         </tr>
     <?php endforeach; ?>

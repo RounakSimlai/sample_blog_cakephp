@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Model\Entity;
 
+use Cake\I18n\FrozenTime;
 use Cake\ORM\Entity;
 
 /**
@@ -14,7 +15,7 @@ use Cake\ORM\Entity;
  * @property int $category_id
  * @property \Cake\I18n\FrozenTime $created
  * @property \Cake\I18n\FrozenTime $modified
- *
+ * @property \Cake\I18n\FrozenTime $disabled
  * @property \App\Model\Entity\Category $category
  * @property \App\Model\Entity\User $user
  */
@@ -37,5 +38,6 @@ class Article extends Entity
         'modified' => true,
         'category' => true,
         'user' => true,
+        'disabled'=>true,
     ];
 }

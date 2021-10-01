@@ -34,6 +34,9 @@ class CreateCategoriesTable extends AbstractMigration
             ->addColumn('modified', 'datetime', [
                 'null' => true,
             ])
+            ->addColumn('disabled', 'datetime', [
+                'null' => true,
+            ])
             ->create();
     }
 }

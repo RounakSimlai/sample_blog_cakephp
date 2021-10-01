@@ -1,5 +1,6 @@
 <?php
 /**
+ * @var \App\View\AppView $this
  * @var \App\Model\Entity\Category $category
  * @var \Cake\Datasource\ResultSetInterface $categories
  * @var App\Model\Entity\User $user
@@ -66,9 +67,37 @@ else{
             <td><?= h($category->created) ?></td>
             <td><?= h($category->modified) ?></td>
             <td class="actions">
-                <?= $this->Html->link(__('View'), ['action' => 'view', $category->id,], ['class' => 'btn btn-success']) ?>
-                <?= $this->Html->link(__('Edit'), ['action' => 'edit', $category->id], ['class' => 'btn btn-warning']) ?>
-                <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $category->id], ['class' => 'btn btn-danger'], ['confirm' => 'Are you sure you want to delete this category?']) ?>
+                <?php if ($category->disabled !== null && $user->role_id == 1) { ?>
+                    <?= $this->Form->create($category, [
+                        'action' => \Cake\Routing\Router::url([
+                            'controller' => 'Categories',
+                            'action' => 'disable',
+                            $category->id,
+                        ])
+                    ]) ?>
+                    <?= $this->Form->submit(__('Enable'), ['class' => 'btn btn-secondary', 'confirm' => 'Are you sure you want to enable this category?']) ?>
+                    <?= $this->Form->end() ?>
+                <?php } ?>
+                <?php if ($category->disabled !== null && $user->role_id != 1) { ?>
+                    <?= h('Category Disabled By Admin.') ?>
+                <?php } ?>
+                <?php if ($category->disabled === null) { ?>
+                    <?= $this->Html->link(__('View'), ['action' => 'view', $category->id,], ['class' => 'btn btn-success']) ?>
+                    <?php if ($user->role_id == 1) { ?>
+                        <?= $this->Html->link(__('Edit'), ['action' => 'edit', $category->id], ['class' => 'btn btn-warning']) ?>
+                        <?= $this->Form->postLink(__('Delete'), ['action' => 'delete', $category->id], ['class' => 'btn btn-danger','confirm' => 'Are you sure you want to delete this category?']) ?>
+                        <?= $this->Form->create($category, [
+                            'action' => \Cake\Routing\Router::url([
+                                'controller' => 'Categories',
+                                'action' => 'disable',
+                                $category->id,
+                            ])
+                        ]) ?>
+                        <?= $this->Form->submit(__('Disable'), ['class' => 'btn btn-secondary mt-1', 'confirm' => 'Are you sure you want to disable this article?']) ?>
+                        <?= $this->Form->end() ?>
+                    <?php }
+                }
+                ?>
             </td>
         </tr>
     <?php endforeach; ?>
